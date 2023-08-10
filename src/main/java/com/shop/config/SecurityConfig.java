@@ -18,31 +18,37 @@ public class SecurityConfig {
 
 	@Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http
-			.authorizeHttpRequests((authorizeHttpRequests) 
-					-> authorizeHttpRequests
-						.requestMatchers(new AntPathRequestMatcher("/**"))
-						.permitAll())
-			.csrf((csrf) 
-					-> csrf
-						.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
-			.headers((headers) 
-					-> headers
-	                	.addHeaderWriter(new XFrameOptionsHeaderWriter(
-	                			XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
-			.formLogin((formLogin) 
-					-> formLogin
-	                	.loginPage("/members/login")
-	                	.defaultSuccessUrl("/")
-	                	.usernameParameter("email")
-	                	.failureUrl("/members/login/error"))
+		http.formLogin((formLogin) 
+				-> formLogin
+                	.loginPage("/members/login")
+                	.defaultSuccessUrl("/",  true)
+                	.usernameParameter("email")
+                	.failureUrl("/members/login/error"));
+//			.authorizeHttpRequests((authorizeHttpRequests) 
+//					-> authorizeHttpRequests
+//						.requestMatchers(new AntPathRequestMatcher("/**"))
+//						.permitAll())
+		http.authorizeRequests()
+				.mvcMatchers("/", "/members/**", "/item/**", "/images/**").permitAll()
+				.mvcMatchers("/admin/**").hasRole("ADMIN")
+				.anyRequest().authenticated();
+		http.exceptionHandling()
+			.authenticationEntryPoint(new CustomAuthenticateEntryPoint());
+			
+		http.csrf((csrf) 
+				-> csrf
+					.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")));
+		http.headers((headers) 
+				-> headers
+	               	.addHeaderWriter(new XFrameOptionsHeaderWriter(
+	               			XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)));
+			
 						
-			.logout((logout) 
-					-> logout
-	                	.logoutRequestMatcher(new AntPathRequestMatcher("/members/logout"))
-	                	.logoutSuccessUrl("/")
-	                	.invalidateHttpSession(true))
-		;
+		http.logout((logout) 
+				-> logout
+                	.logoutRequestMatcher(new AntPathRequestMatcher("/members/logout"))
+                	.logoutSuccessUrl("/")
+                	.invalidateHttpSession(true));
     	
         return http.build();
     }
