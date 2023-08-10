@@ -2,6 +2,7 @@ package com.shop.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -17,18 +18,18 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class CartItem {
+public class CartItem extends BaseEntity {
 
 	@Id
 	@GeneratedValue
 	@Column(name = "cart_item_id")
 	private Long id;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "cart_id")
 	private Cart cart;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "item_id")
 	private Item item;
 	
