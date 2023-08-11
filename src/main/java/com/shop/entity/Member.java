@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,10 +24,16 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+
 public class Member extends BaseEntity {
 	@Id
 	@Column(name = "member_id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
+//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq_generator")
+//	@SequenceGenerator( 
+//		     name = "member_seq_generator", 
+//		     sequenceName = "member_seq", //매핑할 데이터베이스 시퀀스 이름
+//		     initialValue = 1, allocationSize = 1) 
 	private Long id;
 	
 	private String name;
